@@ -1,5 +1,6 @@
 import pandas as pd
-
+import matplotlib.pyplot as plt
+import os
 # Cargar el dataset
 df = pd.read_csv("data/StudentsPerformance.csv")
 
@@ -69,3 +70,81 @@ print(df[[
     "average_score",
     "performance_level"
 ]].head())
+
+# Crear carpeta de resultados si no existe
+os.makedirs("outputs", exist_ok=True)
+
+print("\n8. ANÁLISIS DE LOS DATOS")
+
+# ANÁLISIS 1: promedio por área
+promedios_areas = df[
+    ["math score", "reading score", "writing score"]
+].mean()
+
+print("\nAnálisis 1 - Promedio por área:")
+print(promedios_areas.round(2))
+print("Área con mayor promedio:", promedios_areas.idxmax())
+
+# Visualización 1
+promedios_areas.plot(
+    kind="bar",
+    title="Promedio de calificaciones por área"
+)
+plt.ylabel("Calificación promedio")
+plt.xlabel("Área")
+plt.tight_layout()
+plt.savefig("outputs/promedio_areas.png")
+plt.close()
+
+
+# ANÁLISIS 2: curso de preparación
+promedio_preparacion = df.groupby(
+    "test preparation course"
+)["average_score"].mean()
+
+print("\nAnálisis 2 - Promedio según curso de preparación:")
+print(promedio_preparacion.round(2))
+
+# Visualización 2
+promedio_preparacion.plot(
+    kind="bar",
+    title="Rendimiento según curso de preparación"
+)
+plt.ylabel("Promedio general")
+plt.xlabel("Curso de preparación")
+plt.tight_layout()
+plt.savefig("outputs/curso_preparacion.png")
+plt.close()
+
+
+# ANÁLISIS 3: educación de los padres
+promedio_padres = df.groupby(
+    "parental level of education"
+)["average_score"].mean().sort_values(ascending=False)
+
+print("\nAnálisis 3 - Promedio según educación de los padres:")
+print(promedio_padres.round(2))
+
+
+# ANÁLISIS 4: distribución del rendimiento
+distribucion = df["performance_level"].value_counts()
+porcentajes = df["performance_level"].value_counts(normalize=True) * 100
+
+print("\nAnálisis 4 - Distribución del rendimiento:")
+print(distribucion)
+
+print("\nPorcentaje por nivel:")
+print(porcentajes.round(2))
+
+# Visualización 3
+distribucion.plot(
+    kind="bar",
+    title="Distribución de niveles de rendimiento"
+)
+plt.ylabel("Número de estudiantes")
+plt.xlabel("Nivel de rendimiento")
+plt.tight_layout()
+plt.savefig("outputs/distribucion_rendimiento.png")
+plt.close()
+
+print("\nVisualizaciones guardadas en la carpeta outputs/")
